@@ -25,15 +25,16 @@ import 'package:get/get.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-
   Future<void> _loadData() async {
     Get.find<OrderController>().getIgnoreList();
     Get.find<OrderController>().removeFromIgnoreList();
     await Get.find<AuthController>().getProfile();
     await Get.find<OrderController>().getCurrentOrders();
     await Get.find<NotificationController>().getNotificationList();
-    bool isBatteryOptimizationDisabled = GetPlatform.isAndroid ? (await DisableBatteryOptimization.isBatteryOptimizationDisabled)! : true;
-    if(!isBatteryOptimizationDisabled && GetPlatform.isAndroid) {
+    bool isBatteryOptimizationDisabled = GetPlatform.isAndroid
+        ? (await DisableBatteryOptimization.isBatteryOptimizationDisabled)!
+        : true;
+    if (!isBatteryOptimizationDisabled && GetPlatform.isAndroid) {
       DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
     }
   }
@@ -45,78 +46,123 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).cardColor,
-        leading: Padding(
+        //TODO:OLD
+        // leading: Padding(
+        //   padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+        //   child: Image.asset(Images.logo, height: 30, width: 30),
+        // ),
+        titleSpacing: 0,
+        elevation: 0,
+        title: Padding(
           padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-          child: Image.asset(Images.logo, height: 30, width: 30),
+          child: Image.asset(Images.logo, height: 45, width: 100),
         ),
-        titleSpacing: 0, elevation: 0,
-        title: Text(AppConstants.appName, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoMedium.copyWith(
-          color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeDefault,
-        )),
+        //TODO:OLD
+        // title: Text(AppConstants.appName,
+        //     maxLines: 1,
+        //     overflow: TextOverflow.ellipsis,
+        //     style: robotoMedium.copyWith(
+        //       color: Theme.of(context).textTheme.bodyLarge!.color,
+        //       fontSize: Dimensions.fontSizeDefault,
+        //     )),
         actions: [
           IconButton(
-            icon: GetBuilder<NotificationController>(builder: (notificationController) {
-
+            icon: GetBuilder<NotificationController>(
+                builder: (notificationController) {
               return Stack(children: [
-                Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyLarge!.color),
-                notificationController.hasNotification ? Positioned(top: 0, right: 0, child: Container(
-                  height: 10, width: 10, decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor, shape: BoxShape.circle,
-                  border: Border.all(width: 1, color: Theme.of(context).cardColor),
+                Image.asset(
+                  "assets/icons/notification.png",
+                  height: 23,
+                  color: ColorConstants.primary,
                 ),
-                )) : const SizedBox(),
+                notificationController.hasNotification
+                    ? Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          height: 10,
+                          width: 10,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                width: 1, color: Theme.of(context).cardColor),
+                          ),
+                        ))
+                    : const SizedBox(),
               ]);
             }),
             onPressed: () => Get.toNamed(RouteHelper.getNotificationRoute()),
           ),
           GetBuilder<AuthController>(builder: (authController) {
             return GetBuilder<OrderController>(builder: (orderController) {
-              return (authController.profileModel != null && orderController.currentOrderList != null) ? FlutterSwitch(
-                width: 75, height: 30, valueFontSize: Dimensions.fontSizeExtraSmall, showOnOff: true,
-                activeText: 'online'.tr, inactiveText: 'offline'.tr, activeColor: Theme.of(context).primaryColor,
-                value: authController.profileModel!.active == 1, onToggle: (bool isActive) async {
-                  if(!isActive && orderController.currentOrderList!.isNotEmpty) {
-                    showCustomSnackBar('you_can_not_go_offline_now'.tr);
-                  }else {
-                    if(!isActive) {
-                      Get.dialog(ConfirmationDialog(
-                        icon: Images.warning, description: 'are_you_sure_to_offline'.tr,
-                        onYesPressed: () {
-                          Get.back();
-                          authController.updateActiveStatus();
-                        },
-                      ));
-                    }else {
-                      LocationPermission permission = await Geolocator.checkPermission();
-                      if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-                          || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-                        if(GetPlatform.isAndroid) {
-                          Get.dialog(ConfirmationDialog(
-                            icon: Images.locationPermission,
-                            iconSize: 200,
-                            hasCancel: false,
-                            description: 'this_app_collects_location_data'.tr,
-                            onYesPressed: () {
-                              Get.back();
-                              _checkPermission(() => authController.updateActiveStatus());
-                            },
-                          ), barrierDismissible: false);
-                        }else {
-                          _checkPermission(() => authController.updateActiveStatus());
+              return (authController.profileModel != null &&
+                      orderController.currentOrderList != null)
+                  ? FlutterSwitch(
+                      width: 75,
+                      height: 30,
+                      valueFontSize: Dimensions.fontSizeExtraSmall,
+                      showOnOff: true,
+                      activeText: 'online'.tr,
+                      inactiveText: 'offline'.tr,
+                      activeColor: Theme.of(context).primaryColor,
+                      value: authController.profileModel!.active == 1,
+                      onToggle: (bool isActive) async {
+                        if (!isActive &&
+                            orderController.currentOrderList!.isNotEmpty) {
+                          showCustomSnackBar('you_can_not_go_offline_now'.tr);
+                        } else {
+                          if (!isActive) {
+                            Get.dialog(ConfirmationDialog(
+                              icon: Images.warning,
+                              description: 'are_you_sure_to_offline'.tr,
+                              onYesPressed: () {
+                                Get.back();
+                                authController.updateActiveStatus();
+                              },
+                            ));
+                          } else {
+                            LocationPermission permission =
+                                await Geolocator.checkPermission();
+                            if (permission == LocationPermission.denied ||
+                                permission ==
+                                    LocationPermission.deniedForever ||
+                                (GetPlatform.isIOS
+                                    ? false
+                                    : permission ==
+                                        LocationPermission.whileInUse)) {
+                              if (GetPlatform.isAndroid) {
+                                Get.dialog(
+                                    ConfirmationDialog(
+                                      icon: Images.locationPermission,
+                                      iconSize: 200,
+                                      hasCancel: false,
+                                      description:
+                                          'this_app_collects_location_data'.tr,
+                                      onYesPressed: () {
+                                        Get.back();
+                                        _checkPermission(() => authController
+                                            .updateActiveStatus());
+                                      },
+                                    ),
+                                    barrierDismissible: false);
+                              } else {
+                                _checkPermission(
+                                    () => authController.updateActiveStatus());
+                              }
+                            } else {
+                              authController.updateActiveStatus();
+                            }
+                          }
                         }
-                      }else {
-                        authController.updateActiveStatus();
-                      }
-                    }
-                  }
-                },
-              ) : const SizedBox();
+                      },
+                    )
+                  : const SizedBox();
             });
           }),
           const SizedBox(width: Dimensions.paddingSizeSmall),
         ],
       ),
-
       body: RefreshIndicator(
         onRefresh: () async {
           return await _loadData();
@@ -125,100 +171,176 @@ class HomeScreen extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: GetBuilder<AuthController>(builder: (authController) {
-
             return Column(children: [
-
               GetBuilder<OrderController>(builder: (orderController) {
-                bool hasActiveOrder = orderController.currentOrderList == null || orderController.currentOrderList!.isNotEmpty;
-                bool hasMoreOrder = orderController.currentOrderList != null && orderController.currentOrderList!.length > 1;
+                bool hasActiveOrder =
+                    orderController.currentOrderList == null ||
+                        orderController.currentOrderList!.isNotEmpty;
+                bool hasMoreOrder = orderController.currentOrderList != null &&
+                    orderController.currentOrderList!.length > 1;
                 return Column(children: [
-                  hasActiveOrder ? TitleWidget(
-                    title: 'active_order'.tr, onTap: hasMoreOrder ? () {
-                      Get.toNamed(RouteHelper.getRunningOrderRoute(), arguments: const RunningOrderScreen());
-                    } : null,
-                  ) : const SizedBox(),
-                  SizedBox(height: hasActiveOrder ? Dimensions.paddingSizeExtraSmall : 0),
-                  orderController.currentOrderList == null ? OrderShimmer(
-                    isEnabled: orderController.currentOrderList == null,
-                  ) : orderController.currentOrderList!.isNotEmpty ? OrderWidget(
-                    orderModel: orderController.currentOrderList![0], isRunningOrder: true, orderIndex: 0,
-                  ) : const SizedBox(),
-                  SizedBox(height: hasActiveOrder ? Dimensions.paddingSizeDefault : 0),
+                  hasActiveOrder
+                      ? TitleWidget(
+                          title: 'active_order'.tr,
+                          onTap: hasMoreOrder
+                              ? () {
+                                  Get.toNamed(
+                                      RouteHelper.getRunningOrderRoute(),
+                                      arguments: const RunningOrderScreen());
+                                }
+                              : null,
+                        )
+                      : const SizedBox(),
+                  SizedBox(
+                      height: hasActiveOrder
+                          ? Dimensions.paddingSizeExtraSmall
+                          : 0),
+                  orderController.currentOrderList == null
+                      ? OrderShimmer(
+                          isEnabled: orderController.currentOrderList == null,
+                        )
+                      : orderController.currentOrderList!.isNotEmpty
+                          ? OrderWidget(
+                              orderModel: orderController.currentOrderList![0],
+                              isRunningOrder: true,
+                              orderIndex: 0,
+                            )
+                          : const SizedBox(),
+                  SizedBox(
+                      height:
+                          hasActiveOrder ? Dimensions.paddingSizeDefault : 0),
                 ]);
               }),
-
-              (authController.profileModel != null && authController.profileModel!.earnings == 1) ? Column(children: [
-                TitleWidget(title: 'earnings'.tr),
-                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                Container(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: Column(children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      Image.asset(Images.wallet, width: 60, height: 60),
-                      const SizedBox(width: Dimensions.paddingSizeLarge),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(
-                          'balance'.tr,
-                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor),
+              (authController.profileModel != null &&
+                      authController.profileModel!.earnings == 1)
+                  ? Column(children: [
+                      TitleWidget(title: 'earnings'.tr),
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                      Container(
+                        padding:
+                            const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.radiusSmall),
+                          color: Theme.of(context).primaryColor,
                         ),
-                        const SizedBox(height: Dimensions.paddingSizeSmall),
-                        authController.profileModel != null ? Text(
-                          PriceConverter.convertPrice(authController.profileModel!.balance),
-                          style: robotoBold.copyWith(fontSize: 24, color: Theme.of(context).cardColor),
-                          maxLines: 1, overflow: TextOverflow.ellipsis,
-                        ) : Container(height: 30, width: 60, color: Colors.white),
-                      ]),
-                    ]),
-                    const SizedBox(height: 30),
-                    Row(children: [
-                      EarningWidget(
-                        title: 'today'.tr,
-                        amount: authController.profileModel != null ? authController.profileModel!.todaysEarning : null,
+                        child: Column(children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                    width: Dimensions.paddingSizeSmall),
+                                Image.asset(Images.wallet,
+                                    width: 60, height: 60),
+                                const SizedBox(
+                                    width: Dimensions.paddingSizeLarge),
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'balance'.tr,
+                                        style: robotoMedium.copyWith(
+                                            fontSize: Dimensions.fontSizeSmall,
+                                            color: Theme.of(context).cardColor),
+                                      ),
+                                      const SizedBox(
+                                          height: Dimensions.paddingSizeSmall),
+                                      authController.profileModel != null
+                                          ? Text(
+                                              PriceConverter.convertPrice(
+                                                  authController
+                                                      .profileModel!.balance),
+                                              style: robotoBold.copyWith(
+                                                  fontSize: 24,
+                                                  color: Theme.of(context)
+                                                      .cardColor),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            )
+                                          : Container(
+                                              height: 30,
+                                              width: 60,
+                                              color: Colors.white),
+                                    ]),
+                              ]),
+                          const SizedBox(height: 30),
+                          Row(children: [
+                            EarningWidget(
+                              title: 'today'.tr,
+                              amount: authController.profileModel != null
+                                  ? authController.profileModel!.todaysEarning
+                                  : null,
+                            ),
+                            Container(
+                                height: 30,
+                                width: 1,
+                                color: Theme.of(context).cardColor),
+                            EarningWidget(
+                              title: 'this_week'.tr,
+                              amount: authController.profileModel != null
+                                  ? authController.profileModel!.thisWeekEarning
+                                  : null,
+                            ),
+                            Container(
+                                height: 30,
+                                width: 1,
+                                color: Theme.of(context).cardColor),
+                            EarningWidget(
+                              title: 'this_month'.tr,
+                              amount: authController.profileModel != null
+                                  ? authController
+                                      .profileModel!.thisMonthEarning
+                                  : null,
+                            ),
+                          ]),
+                        ]),
                       ),
-                      Container(height: 30, width: 1, color: Theme.of(context).cardColor),
-                      EarningWidget(
-                        title: 'this_week'.tr,
-                        amount: authController.profileModel != null ? authController.profileModel!.thisWeekEarning : null,
-                      ),
-                      Container(height: 30, width: 1, color: Theme.of(context).cardColor),
-                      EarningWidget(
-                        title: 'this_month'.tr,
-                        amount: authController.profileModel != null ? authController.profileModel!.thisMonthEarning : null,
-                      ),
-                    ]),
-                  ]),
-                ),
-                const SizedBox(height: Dimensions.paddingSizeDefault),
-              ]) : const SizedBox(),
-
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                    ])
+                  : const SizedBox(),
               TitleWidget(title: 'orders'.tr),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
               Row(children: [
-                Expanded(child: CountCard(
-                  title: 'todays_orders'.tr, backgroundColor: Theme.of(context).secondaryHeaderColor, height: 180,
-                  value: authController.profileModel != null ? authController.profileModel!.todaysOrderCount.toString() : null,
+                Expanded(
+                    child: CountCard(
+                  title: 'todays_orders'.tr,
+                  backgroundColor: Theme.of(context).secondaryHeaderColor,
+                  height: 180,
+                  value: authController.profileModel != null
+                      ? authController.profileModel!.todaysOrderCount.toString()
+                      : null,
                 )),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
-                Expanded(child: CountCard(
-                  title: 'this_week_orders'.tr, backgroundColor: Theme.of(context).colorScheme.error, height: 180,
-                  value: authController.profileModel != null ? authController.profileModel!.thisWeekOrderCount.toString() : null,
+                Expanded(
+                    child: CountCard(
+                  title: 'this_week_orders'.tr,
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  height: 180,
+                  value: authController.profileModel != null
+                      ? authController.profileModel!.thisWeekOrderCount
+                          .toString()
+                      : null,
                 )),
               ]),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               CountCard(
-                title: 'total_orders'.tr, backgroundColor: Theme.of(context).primaryColor, height: 140,
-                value: authController.profileModel != null ? authController.profileModel!.orderCount.toString() : null,
+                title: 'total_orders'.tr,
+                backgroundColor: Theme.of(context).primaryColor,
+                height: 140,
+                value: authController.profileModel != null
+                    ? authController.profileModel!.orderCount.toString()
+                    : null,
               ),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               CountCard(
-                title: 'cash_in_your_hand'.tr, backgroundColor: Colors.green, height: 140,
+                title: 'cash_in_your_hand'.tr,
+                backgroundColor: Colors.green,
+                height: 140,
                 value: authController.profileModel != null
-                    ? PriceConverter.convertPrice(authController.profileModel!.cashInHands) : null,
+                    ? PriceConverter.convertPrice(
+                        authController.profileModel!.cashInHands)
+                    : null,
               ),
 
               /*TitleWidget(title: 'ratings'.tr),
@@ -255,7 +377,6 @@ class HomeScreen extends StatelessWidget {
                   }),
                 ]),
               ),*/
-
             ]);
           }),
         ),
@@ -266,20 +387,30 @@ class HomeScreen extends StatelessWidget {
   void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied
-        || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-      Get.dialog(CustomAlertDialog(description: 'you_denied'.tr, onOkPressed: () async {
-        Get.back();
-        await Geolocator.requestPermission();
-        _checkPermission(callback);
-      }), barrierDismissible: false);
-    }else if(permission == LocationPermission.deniedForever) {
-      Get.dialog(CustomAlertDialog(description: 'you_denied_forever'.tr, onOkPressed: () async {
-        Get.back();
-        await Geolocator.openAppSettings();
-        _checkPermission(callback);
-      }), barrierDismissible: false);
-    }else {
+    if (permission == LocationPermission.denied ||
+        (GetPlatform.isIOS
+            ? false
+            : permission == LocationPermission.whileInUse)) {
+      Get.dialog(
+          CustomAlertDialog(
+              description: 'you_denied'.tr,
+              onOkPressed: () async {
+                Get.back();
+                await Geolocator.requestPermission();
+                _checkPermission(callback);
+              }),
+          barrierDismissible: false);
+    } else if (permission == LocationPermission.deniedForever) {
+      Get.dialog(
+          CustomAlertDialog(
+              description: 'you_denied_forever'.tr,
+              onOkPressed: () async {
+                Get.back();
+                await Geolocator.openAppSettings();
+                _checkPermission(callback);
+              }),
+          barrierDismissible: false);
+    } else {
       callback();
     }
   }

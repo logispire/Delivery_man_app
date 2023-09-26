@@ -51,7 +51,8 @@ class CustomDropdownState<T> extends State<CustomDropdown<T?>>
   void initState() {
     super.initState();
 
-    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
     _expandAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -68,18 +69,25 @@ class CustomDropdownState<T> extends State<CustomDropdown<T?>>
     // link the overlay to the button
     return CompositedTransformTarget(
       link: this._layerLink,
-      child: SizedBox(
+      child: Container(
         width: style.width,
         height: style.height,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: Theme.of(context).primaryColor,
+          ),
+          borderRadius: widget.dropdownStyle.borderRadius,
+        ),
         child: InkWell(
           onTap: _toggleDropdown,
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: Row(
               mainAxisAlignment:
-              style.mainAxisAlignment ?? MainAxisAlignment.center,
+                  style.mainAxisAlignment ?? MainAxisAlignment.center,
               textDirection:
-              widget.leadingIcon ? TextDirection.rtl : TextDirection.ltr,
+                  widget.leadingIcon ? TextDirection.rtl : TextDirection.ltr,
               mainAxisSize: MainAxisSize.max,
               children: [
                 if (_currentIndex == -1) ...[
@@ -125,12 +133,13 @@ class CustomDropdownState<T> extends State<CustomDropdown<T?>>
                 width: widget.dropdownStyle.width ?? size.width,
                 child: CompositedTransformFollower(
                   offset:
-                  widget.dropdownStyle.offset ?? Offset(0, size.height + 5),
+                      widget.dropdownStyle.offset ?? Offset(0, size.height + 5),
                   link: this._layerLink,
                   showWhenUnlinked: false,
                   child: Material(
                     elevation: widget.dropdownStyle.elevation ?? 0,
-                    borderRadius: widget.dropdownStyle.borderRadius ?? BorderRadius.zero,
+                    borderRadius:
+                        widget.dropdownStyle.borderRadius ?? BorderRadius.zero,
                     color: widget.dropdownStyle.color,
                     child: SizeTransition(
                       axisAlignment: 1,
@@ -144,7 +153,7 @@ class CustomDropdownState<T> extends State<CustomDropdown<T?>>
                             ),
                         child: ListView(
                           padding:
-                          widget.dropdownStyle.padding ?? EdgeInsets.zero,
+                              widget.dropdownStyle.padding ?? EdgeInsets.zero,
                           shrinkWrap: true,
                           children: widget.items.asMap().entries.map((item) {
                             return InkWell(

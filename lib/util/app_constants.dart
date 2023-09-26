@@ -1,8 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:sixam_mart_delivery/data/model/response/language_model.dart';
 import 'package:sixam_mart_delivery/util/images.dart';
 
+class ColorConstants {
+  static Color primary = const Color(0xff227C3E);
+  static Color secondary = const Color(0xff67BB6A);
+}
+
 class AppConstants {
-  static const String appName = '6amMart Delivery';
+  static const String appName = 'Tom Delivery';
   static const double appVersion = 2.2;
 
   static const String baseUrl = 'http://tomtheorganicmart.com';
@@ -98,15 +104,15 @@ class AppConstants {
         languageName: 'English',
         countryCode: 'US',
         languageCode: 'en'),
-    LanguageModel(
-        imageUrl: Images.arabic,
-        languageName: 'Arabic',
-        countryCode: 'SA',
-        languageCode: 'ar'),
-    LanguageModel(
-        imageUrl: Images.arabic,
-        languageName: 'Spanish',
-        countryCode: 'ES',
-        languageCode: 'es'),
+    // LanguageModel(
+    //     imageUrl: Images.arabic,
+    //     languageName: 'Arabic',
+    //     countryCode: 'SA',
+    //     languageCode: 'ar'),
+    // LanguageModel(
+    //     imageUrl: Images.arabic,
+    //     languageName: 'Spanish',
+    //     countryCode: 'ES',
+    //     languageCode: 'es'),
   ];
 }
