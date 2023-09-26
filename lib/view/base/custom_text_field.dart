@@ -172,9 +172,17 @@ class CustomTextFieldState extends State<CustomTextField> {
                         : null,
             suffixIcon: widget.isPassword
                 ? IconButton(
-                    icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: Theme.of(context).hintColor.withOpacity(0.3)),
+                    //TODO:OLD
+                    // icon: Icon(
+                    //     _obscureText ? Icons.visibility_off : Icons.visibility,
+                    //     color: Theme.of(context).hintColor.withOpacity(0.3)),
+                    icon: Image.asset(
+                      _obscureText
+                          ? "assets/icons/eyeslash.png"
+                          : "assets/icons/eye_open.png",
+                      height: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
                     onPressed: _toggle,
                   )
                 : null,

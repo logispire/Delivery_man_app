@@ -35,189 +35,194 @@ class SignInScreen extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     return Scaffold(
       body: SafeArea(
-          child: Center(
-        child: Stack(
-          children: [
-            Image.asset(
-              Images.loginBackground,
-              fit: BoxFit.cover,
-              width: size.width,
-            ),
-            Scrollbar(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                child: Center(
-                  child: SizedBox(
-                    width: 1170,
-                    child:
-                        GetBuilder<AuthController>(builder: (authController) {
-                      return Column(children: [
-                        Image.asset(Images.logo, width: 200),
-                        // SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                        //Center(child: Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE))),
-                        const SizedBox(
-                            height: Dimensions.paddingSizeExtraLarge),
-
-                        Text(
-                          'sign_in'.tr,
-                          style: robotoRegular.copyWith(
-                            fontSize: Dimensions.fontSizeExtraLarge,
-                            color: ColorConstants.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-
-                        Column(children: [
-                          // Row(children: [
-                          //   CountryCodePicker(
-                          //     onChanged: (CountryCode countryCode) {
-                          //       countryDialCode = countryCode.dialCode;
-                          //     },
-                          //     initialSelection: countryDialCode ?? Get.find<LocalizationController>().locale.countryCode,
-                          //     favorite: [countryDialCode!],
-                          //     showDropDownButton: true,
-                          //     padding: EdgeInsets.zero,
-                          //     showFlagMain: true,
-                          //     dialogBackgroundColor: Theme.of(context).cardColor,
-                          //     flagWidth: 30,
-                          //     textStyle: robotoRegular.copyWith(
-                          //       fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge!.color,
-                          //     ),
-                          //   ),
-                          //   Expanded(child: CustomTextField(
-                          //     hintText: 'phone'.tr,
-                          //     controller: _phoneController,
-                          //     focusNode: _phoneFocus,
-                          //     nextFocus: _passwordFocus,
-                          //     inputType: TextInputType.phone,
-                          //     divider: false,
-                          //   )),
-                          // ]),
-
-                          CustomTextField(
-                            hintText: 'phone'.tr,
-                            controller: _phoneController,
-                            focusNode: _phoneFocus,
-                            nextFocus: _passwordFocus,
-                            inputType: TextInputType.phone,
-                            isPhone: true,
-                            onCountryChanged: (CountryCode countryCode) {
-                              countryDialCode = countryCode.dialCode;
-                            },
-                            countryDialCode: countryDialCode != null
-                                ? CountryCode.fromCountryCode(
-                                        Get.find<SplashController>()
-                                            .configModel!
-                                            .country!)
-                                    .code
-                                : Get.find<LocalizationController>()
-                                    .locale
-                                    .countryCode,
-                          ),
-
+        child: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Image.asset(
+                Images.loginBackground,
+                fit: BoxFit.cover,
+                width: size.width,
+              ),
+              Scrollbar(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                  child: Center(
+                    child: SizedBox(
+                      width: 1170,
+                      child:
+                          GetBuilder<AuthController>(builder: (authController) {
+                        return Column(children: [
+                          Image.asset(Images.logo, width: 200),
+                          // SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                          //Center(child: Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE))),
                           const SizedBox(
                               height: Dimensions.paddingSizeExtraLarge),
-                          CustomTextField(
-                            hintText: 'password'.tr,
-                            controller: _passwordController,
-                            focusNode: _passwordFocus,
-                            inputAction: TextInputAction.done,
-                            inputType: TextInputType.visiblePassword,
-                            prefixImage: Images.lock,
-                            isPassword: true,
-                            onSubmit: (text) => GetPlatform.isWeb
-                                ? _login(
-                                    authController,
-                                    _phoneController,
-                                    _passwordController,
-                                    countryDialCode!,
-                                    context,
-                                  )
-                                : null,
-                          ),
-                        ]),
-                        const SizedBox(height: 10),
-
-                        Row(children: [
-                          Expanded(
-                            child: ListTile(
-                              onTap: () => authController.toggleRememberMe(),
-                              leading: Checkbox(
-                                activeColor: Theme.of(context).primaryColor,
-                                value: authController.isActiveRememberMe,
-                                onChanged: (bool? isChecked) =>
-                                    authController.toggleRememberMe(),
-                              ),
-                              title: Text('remember_me'.tr),
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                              horizontalTitleGap: 0,
+                          Text(
+                            'sign_in'.tr,
+                            style: robotoRegular.copyWith(
+                              fontSize: Dimensions.fontSizeExtraLarge,
+                              color: ColorConstants.primary,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () =>
-                                Get.toNamed(RouteHelper.getForgotPassRoute()),
-                            child: Text('${'forgot_password'.tr}?'),
-                          ),
-                        ]),
-                        const SizedBox(height: 50),
+                          const SizedBox(
+                              height: Dimensions.paddingSizeExtraSmall),
 
-                        !authController.isLoading
-                            ? CustomButton(
-                                buttonText: 'sign_in'.tr,
-                                onPressed: () => _login(
-                                    authController,
-                                    _phoneController,
-                                    _passwordController,
-                                    countryDialCode!,
-                                    context),
-                              )
-                            : const Center(child: CircularProgressIndicator()),
-                        SizedBox(
-                            height: Get.find<SplashController>()
-                                    .configModel!
-                                    .toggleDmRegistration!
-                                ? Dimensions.paddingSizeSmall
-                                : 0),
+                          const SizedBox(height: 20),
 
-                        Get.find<SplashController>()
-                                .configModel!
-                                .toggleDmRegistration!
-                            ? TextButton(
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size(1, 40),
+                          Column(children: [
+                            // Row(children: [
+                            //   CountryCodePicker(
+                            //     onChanged: (CountryCode countryCode) {
+                            //       countryDialCode = countryCode.dialCode;
+                            //     },
+                            //     initialSelection: countryDialCode ?? Get.find<LocalizationController>().locale.countryCode,
+                            //     favorite: [countryDialCode!],
+                            //     showDropDownButton: true,
+                            //     padding: EdgeInsets.zero,
+                            //     showFlagMain: true,
+                            //     dialogBackgroundColor: Theme.of(context).cardColor,
+                            //     flagWidth: 30,
+                            //     textStyle: robotoRegular.copyWith(
+                            //       fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge!.color,
+                            //     ),
+                            //   ),
+                            //   Expanded(child: CustomTextField(
+                            //     hintText: 'phone'.tr,
+                            //     controller: _phoneController,
+                            //     focusNode: _phoneFocus,
+                            //     nextFocus: _passwordFocus,
+                            //     inputType: TextInputType.phone,
+                            //     divider: false,
+                            //   )),
+                            // ]),
+
+                            CustomTextField(
+                              hintText: 'phone'.tr,
+                              controller: _phoneController,
+                              focusNode: _phoneFocus,
+                              nextFocus: _passwordFocus,
+                              inputType: TextInputType.phone,
+                              isPhone: true,
+                              onCountryChanged: (CountryCode countryCode) {
+                                countryDialCode = countryCode.dialCode;
+                              },
+                              countryDialCode: countryDialCode != null
+                                  ? CountryCode.fromCountryCode(
+                                          Get.find<SplashController>()
+                                              .configModel!
+                                              .country!)
+                                      .code
+                                  : Get.find<LocalizationController>()
+                                      .locale
+                                      .countryCode,
+                            ),
+
+                            const SizedBox(
+                                height: Dimensions.paddingSizeExtraLarge),
+                            CustomTextField(
+                              hintText: 'password'.tr,
+                              controller: _passwordController,
+                              focusNode: _passwordFocus,
+                              inputAction: TextInputAction.done,
+                              inputType: TextInputType.visiblePassword,
+                              prefixImage: Images.lock,
+                              isPassword: true,
+                              onSubmit: (text) => GetPlatform.isWeb
+                                  ? _login(
+                                      authController,
+                                      _phoneController,
+                                      _passwordController,
+                                      countryDialCode!,
+                                      context,
+                                    )
+                                  : null,
+                            ),
+                          ]),
+                          const SizedBox(height: 10),
+
+                          Row(children: [
+                            Expanded(
+                              child: ListTile(
+                                onTap: () => authController.toggleRememberMe(),
+                                leading: Checkbox(
+                                  activeColor: Theme.of(context).primaryColor,
+                                  value: authController.isActiveRememberMe,
+                                  onChanged: (bool? isChecked) =>
+                                      authController.toggleRememberMe(),
                                 ),
-                                onPressed: () {
-                                  Get.toNamed(RouteHelper
-                                      .getDeliverymanRegistrationRoute());
-                                },
-                                child: RichText(
-                                    text: TextSpan(children: [
-                                  TextSpan(
-                                      text: '${'join_as_a'.tr} ',
-                                      style: robotoRegular.copyWith(
-                                          color:
-                                              Theme.of(context).disabledColor)),
-                                  TextSpan(
-                                      text: 'delivery_man'.tr,
-                                      style: robotoMedium.copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color)),
-                                ])),
-                              )
-                            : const SizedBox(),
-                      ]);
-                    }),
+                                title: Text('remember_me'.tr),
+                                contentPadding: EdgeInsets.zero,
+                                dense: true,
+                                horizontalTitleGap: 0,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Get.toNamed(RouteHelper.getForgotPassRoute()),
+                              child: Text('${'forgot_password'.tr}?'),
+                            ),
+                          ]),
+                          const SizedBox(height: 50),
+
+                          !authController.isLoading
+                              ? CustomButton(
+                                  buttonText: 'sign_in'.tr,
+                                  onPressed: () => _login(
+                                      authController,
+                                      _phoneController,
+                                      _passwordController,
+                                      countryDialCode!,
+                                      context),
+                                )
+                              : const Center(
+                                  child: CircularProgressIndicator()),
+                          SizedBox(
+                              height: Get.find<SplashController>()
+                                      .configModel!
+                                      .toggleDmRegistration!
+                                  ? Dimensions.paddingSizeSmall
+                                  : 0),
+
+                          Get.find<SplashController>()
+                                  .configModel!
+                                  .toggleDmRegistration!
+                              ? TextButton(
+                                  style: TextButton.styleFrom(
+                                    minimumSize: const Size(1, 40),
+                                  ),
+                                  onPressed: () {
+                                    Get.toNamed(RouteHelper
+                                        .getDeliverymanRegistrationRoute());
+                                  },
+                                  child: RichText(
+                                      text: TextSpan(children: [
+                                    TextSpan(
+                                        text: '${'join_as_a'.tr} ',
+                                        style: robotoRegular.copyWith(
+                                            color: Theme.of(context)
+                                                .disabledColor)),
+                                    TextSpan(
+                                        text: 'delivery_man'.tr,
+                                        style: robotoMedium.copyWith(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color)),
+                                  ])),
+                                )
+                              : const SizedBox(),
+                        ]);
+                      }),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 
