@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
+
   OrderController({required this.orderRepo});
 
   List<OrderModel>? _allOrderList;
@@ -26,8 +27,22 @@ class OrderController extends GetxController implements GetxService {
   List<OrderDetailsModel>? _orderDetailsModel;
   List<IgnoreModel> _ignoredRequests = [];
   bool _isLoading = false;
-  Position _position = const Position(longitude: 0, latitude: 0, timestamp: null, accuracy: 1, altitude: 1, heading: 1, speed: 1, speedAccuracy: 1);
-  Placemark _placeMark = Placemark(name: 'Unknown', subAdministrativeArea: 'Location', isoCountryCode: 'Found');
+  Position _position = Position(
+    longitude: 0,
+    latitude: 0,
+    accuracy: 1,
+    altitude: 1,
+    heading: 1,
+    speed: 1,
+    speedAccuracy: 1,
+    timestamp: DateTime.now(),
+    altitudeAccuracy: 0,
+    headingAccuracy: 0,
+  );
+  Placemark _placeMark = Placemark(
+      name: 'Unknown',
+      subAdministrativeArea: 'Location',
+      isoCountryCode: 'Found');
   String _otp = '';
   bool _paginate = false;
   int? _pageSize;
@@ -38,43 +53,60 @@ class OrderController extends GetxController implements GetxService {
   List<CancellationData>? _orderCancelReasons;
 
   List<OrderModel>? get allOrderList => _allOrderList;
+
   List<OrderModel>? get currentOrderList => _currentOrderList;
+
   List<OrderModel>? get deliveredOrderList => _deliveredOrderList;
+
   List<OrderModel>? get completedOrderList => _completedOrderList;
+
   List<OrderModel>? get latestOrderList => _latestOrderList;
+
   List<OrderDetailsModel>? get orderDetailsModel => _orderDetailsModel;
+
   bool get isLoading => _isLoading;
+
   Position get position => _position;
+
   Placemark get placeMark => _placeMark;
-  String get address => '${_placeMark.name} ${_placeMark.subAdministrativeArea} ${_placeMark.isoCountryCode}';
+
+  String get address =>
+      '${_placeMark.name} ${_placeMark.subAdministrativeArea} ${_placeMark.isoCountryCode}';
+
   String get otp => _otp;
+
   bool get paginate => _paginate;
+
   int? get pageSize => _pageSize;
+
   int get offset => _offset;
+
   OrderModel? get orderModel => _orderModel;
+
   String? get cancelReason => _cancelReason;
+
   List<CancellationData>? get orderCancelReasons => _orderCancelReasons;
 
-  void initLoading(){
+  void initLoading() {
     _isLoading = false;
     update();
   }
 
-  void setOrderCancelReason(String? reason){
+  void setOrderCancelReason(String? reason) {
     _cancelReason = reason;
     update();
   }
 
-  Future<void> getOrderCancelReasons()async {
+  Future<void> getOrderCancelReasons() async {
     Response response = await orderRepo.getCancelReasons();
     if (response.statusCode == 200) {
-      OrderCancellationBody orderCancellationBody = OrderCancellationBody.fromJson(response.body);
+      OrderCancellationBody orderCancellationBody =
+          OrderCancellationBody.fromJson(response.body);
       _orderCancelReasons = [];
       for (var element in orderCancellationBody.reasons!) {
         _orderCancelReasons!.add(element);
       }
-
-    }else{
+    } else {
       ApiChecker.checkApi(response);
     }
     update();
@@ -82,16 +114,17 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getAllOrders() async {
     Response response = await orderRepo.getAllOrders();
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _allOrderList = [];
-      response.body.forEach((order) => _allOrderList!.add(OrderModel.fromJson(order)));
+      response.body
+          .forEach((order) => _allOrderList!.add(OrderModel.fromJson(order)));
       _deliveredOrderList = [];
       for (var order in _allOrderList!) {
-        if(order.orderStatus == AppConstants.delivered){
+        if (order.orderStatus == AppConstants.delivered) {
           _deliveredOrderList!.add(order);
         }
       }
-    }else {
+    } else {
       ApiChecker.checkApi(response);
     }
     update();
@@ -100,16 +133,16 @@ class OrderController extends GetxController implements GetxService {
   Future<void> getOrderWithId(int? orderId) async {
     _orderModel = null;
     Response response = await orderRepo.getOrderWithId(orderId);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _orderModel = OrderModel.fromJson(response.body);
-    }else {
+    } else {
       ApiChecker.checkApi(response);
     }
     update();
   }
 
   Future<void> getCompletedOrders(int offset) async {
-    if(offset == 1) {
+    if (offset == 1) {
       _offsetList = [];
       _offset = 1;
       _completedOrderList = null;
@@ -122,7 +155,8 @@ class OrderController extends GetxController implements GetxService {
         if (offset == 1) {
           _completedOrderList = [];
         }
-        _completedOrderList!.addAll(PaginatedOrderModel.fromJson(response.body).orders!);
+        _completedOrderList!
+            .addAll(PaginatedOrderModel.fromJson(response.body).orders!);
         _pageSize = PaginatedOrderModel.fromJson(response.body).totalSize;
         _paginate = false;
         update();
@@ -130,7 +164,7 @@ class OrderController extends GetxController implements GetxService {
         ApiChecker.checkApi(response);
       }
     } else {
-      if(_paginate) {
+      if (_paginate) {
         _paginate = false;
         update();
       }
@@ -148,10 +182,11 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getCurrentOrders() async {
     Response response = await orderRepo.getCurrentOrders();
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _currentOrderList = [];
-      response.body.forEach((order) => _currentOrderList!.add(OrderModel.fromJson(order)));
-    }else {
+      response.body.forEach(
+          (order) => _currentOrderList!.add(OrderModel.fromJson(order)));
+    } else {
       ApiChecker.checkApi(response);
     }
     update();
@@ -159,18 +194,18 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> getLatestOrders() async {
     Response response = await orderRepo.getLatestOrders();
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _latestOrderList = [];
       List<int?> ignoredIdList = [];
       for (var ignore in _ignoredRequests) {
         ignoredIdList.add(ignore.id);
       }
       response.body.forEach((order) {
-        if(!ignoredIdList.contains(OrderModel.fromJson(order).id)) {
+        if (!ignoredIdList.contains(OrderModel.fromJson(order).id)) {
           _latestOrderList!.add(OrderModel.fromJson(order));
         }
       });
-    }else {
+    } else {
       ApiChecker.checkApi(response);
     }
     update();
@@ -178,25 +213,30 @@ class OrderController extends GetxController implements GetxService {
 
   Future<void> recordLocation(RecordLocationBody recordLocationBody) async {
     Response response = await orderRepo.recordLocation(recordLocationBody);
-    if(response.statusCode == 200) {
-
-    }else {
+    if (response.statusCode == 200) {
+    } else {
       ApiChecker.checkApi(response);
     }
   }
 
-  Future<bool> updateOrderStatus(OrderModel currentOrder, String status, {bool back = false,  String? reason, bool? parcel = false}) async {
+  Future<bool> updateOrderStatus(OrderModel currentOrder, String status,
+      {bool back = false, String? reason, bool? parcel = false}) async {
     _isLoading = true;
     update();
     UpdateStatusBody updateStatusBody = UpdateStatusBody(
-      orderId: currentOrder.id, status: status,
-      otp: status == AppConstants.delivered || (parcel! && status == AppConstants.pickedUp) ? _otp : null, reason: reason,
+      orderId: currentOrder.id,
+      status: status,
+      otp: status == AppConstants.delivered ||
+              (parcel! && status == AppConstants.pickedUp)
+          ? _otp
+          : null,
+      reason: reason,
     );
     Response response = await orderRepo.updateOrderStatus(updateStatusBody);
     Get.back();
     bool isSuccess;
-    if(response.statusCode == 200) {
-      if(back) {
+    if (response.statusCode == 200) {
+      if (back) {
         Get.back();
       }
       Get.find<AuthController>().getProfile();
@@ -204,7 +244,7 @@ class OrderController extends GetxController implements GetxService {
       currentOrder.orderStatus = status;
       showCustomSnackBar(response.body['message'], isError: false);
       isSuccess = true;
-    }else {
+    } else {
       ApiChecker.checkApi(response);
       isSuccess = false;
     }
@@ -216,12 +256,13 @@ class OrderController extends GetxController implements GetxService {
   Future<void> updatePaymentStatus(int index, String status) async {
     _isLoading = true;
     update();
-    UpdateStatusBody updateStatusBody = UpdateStatusBody(orderId: _currentOrderList![index].id, status: status);
+    UpdateStatusBody updateStatusBody =
+        UpdateStatusBody(orderId: _currentOrderList![index].id, status: status);
     Response response = await orderRepo.updatePaymentStatus(updateStatusBody);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _currentOrderList![index].paymentStatus = status;
       showCustomSnackBar(response.body['message'], isError: false);
-    }else {
+    } else {
       ApiChecker.checkApi(response);
     }
     _isLoading = false;
@@ -229,32 +270,34 @@ class OrderController extends GetxController implements GetxService {
   }
 
   Future<void> getOrderDetails(int? orderID, bool parcel) async {
-    if(parcel) {
+    if (parcel) {
       _orderDetailsModel = [];
-    }else {
+    } else {
       _orderDetailsModel = null;
       Response response = await orderRepo.getOrderDetails(orderID);
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         _orderDetailsModel = [];
-        response.body.forEach((orderDetails) => _orderDetailsModel!.add(OrderDetailsModel.fromJson(orderDetails)));
-      }else {
+        response.body.forEach((orderDetails) =>
+            _orderDetailsModel!.add(OrderDetailsModel.fromJson(orderDetails)));
+      } else {
         ApiChecker.checkApi(response);
       }
       update();
     }
   }
 
-  Future<bool> acceptOrder(int? orderID, int index, OrderModel orderModel) async {
+  Future<bool> acceptOrder(
+      int? orderID, int index, OrderModel orderModel) async {
     _isLoading = true;
     update();
     Response response = await orderRepo.acceptOrder(orderID);
     Get.back();
     bool isSuccess;
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _latestOrderList!.removeAt(index);
       _currentOrderList!.add(orderModel);
       isSuccess = true;
-    }else {
+    } else {
       ApiChecker.checkApi(response);
       isSuccess = false;
     }
@@ -269,7 +312,8 @@ class OrderController extends GetxController implements GetxService {
   }
 
   void ignoreOrder(int index) {
-    _ignoredRequests.add(IgnoreModel(id: _latestOrderList![index].id, time: DateTime.now()));
+    _ignoredRequests.add(
+        IgnoreModel(id: _latestOrderList![index].id, time: DateTime.now()));
     _latestOrderList!.removeAt(index);
     orderRepo.setIgnoreList(_ignoredRequests);
     update();
@@ -278,8 +322,12 @@ class OrderController extends GetxController implements GetxService {
   void removeFromIgnoreList() {
     List<IgnoreModel> tempList = [];
     tempList.addAll(_ignoredRequests);
-    for(int index=0; index<tempList.length; index++) {
-      if(Get.find<SplashController>().currentTime.difference(tempList[index].time!).inMinutes > 10) {
+    for (int index = 0; index < tempList.length; index++) {
+      if (Get.find<SplashController>()
+              .currentTime
+              .difference(tempList[index].time!)
+              .inMinutes >
+          10) {
         tempList.removeAt(index);
       }
     }
@@ -287,14 +335,15 @@ class OrderController extends GetxController implements GetxService {
     _ignoredRequests.addAll(tempList);
     orderRepo.setIgnoreList(_ignoredRequests);
   }
-  
+
   Future<void> getCurrentLocation() async {
     Position currentPosition = await Geolocator.getCurrentPosition();
-    if(!GetPlatform.isWeb) {
+    if (!GetPlatform.isWeb) {
       try {
-        List<Placemark> placeMarks = await placemarkFromCoordinates(currentPosition.latitude, currentPosition.longitude);
+        List<Placemark> placeMarks = await placemarkFromCoordinates(
+            currentPosition.latitude, currentPosition.longitude);
         _placeMark = placeMarks.first;
-      }catch(_) {}
+      } catch (_) {}
     }
     _position = currentPosition;
     update();
@@ -302,9 +351,8 @@ class OrderController extends GetxController implements GetxService {
 
   void setOtp(String otp) {
     _otp = otp;
-    if(otp != '') {
+    if (otp != '') {
       update();
     }
   }
-
 }

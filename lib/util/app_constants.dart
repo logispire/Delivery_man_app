@@ -104,11 +104,11 @@ class AppConstants {
         languageName: 'English',
         countryCode: 'US',
         languageCode: 'en'),
-    // LanguageModel(
-    //     imageUrl: Images.arabic,
-    //     languageName: 'Arabic',
-    //     countryCode: 'SA',
-    //     languageCode: 'ar'),
+    LanguageModel(
+        imageUrl: Images.arabic,
+        languageName: 'ગુજરાતી',
+        countryCode: 'IN',
+        languageCode: 'gu'),
     // LanguageModel(
     //     imageUrl: Images.arabic,
     //     languageName: 'Spanish',
